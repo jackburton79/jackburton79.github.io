@@ -3,7 +3,7 @@ layout: post
 title: Migrating a linux server using rsync
 ---
 
-Heading
+Migrating a linux server using rsync
 =======
 
 We are migrating from a XenServer 6.0 infrastructure to a Hyper-V 2012R2 based one. We have various VMs (Linux and Windows) which we already migrated.
@@ -18,7 +18,7 @@ I created a new VM with the Failover Cluster Manager in Hyper-V, called "Mail" w
 I then started the VM with an OpenSuSe 12.3 Rescue DVD, and opened a Terminal.
 I checked the partitions and the file systems on the old mail server, then created them on the new disks:
  
-`mail ~ # fdisk -l`
+`mail ~ # fdisk -l
 
 Disk /dev/xvda: 16 GiB, 17179869184 bytes, 33554432 sectors
 Units: sectors of 1 * 512 = 512 bytes
@@ -35,7 +35,7 @@ Device     Boot     Start       End   Blocks  Id System
 Disk /dev/xvdb: 300 GiB, 322122547200 bytes, 629145600 sectors
 Units: sectors of 1 * 512 = 512 bytes
 Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes`
 
 
 `mkfs.reiserfs /dev/sda2`
