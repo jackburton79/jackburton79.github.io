@@ -14,7 +14,30 @@ Moreover, the mail server has two disks, a 16GB and a 300GB disk, 40% full, so i
 So I decided to try a different method, and using rsync to create a clone of the mail server in the Hyper-V infrastructure.
 I created a new VM with the Failover Cluster Manager in Hyper-V, called "Mail" with two disks with the same size of the ones in the original server.
 I then started the VM with an OpenSuSe 12.3 Rescue DVD, and opened a Terminal.
-I formatted the two drives with mkfs.reiserfs
+I checked the partitions and the file systems on the old mail server, then created them on the new disks:
+ 
+`mail ~ # fdisk -l`
+
+Disk /dev/xvda: 16 GiB, 17179869184 bytes, 33554432 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xf76f33b8
+
+Device     Boot     Start       End   Blocks  Id System
+/dev/xvda1           2048   8390655  4194304  82 Linux swap / Solaris
+/dev/xvda2 *      8390656  33554431 12581888  83 Linux
+
+
+Disk /dev/xvdb: 300 GiB, 322122547200 bytes, 629145600 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+
+`mkfs.reiserfs /dev/sda2`
+
 
 
 
