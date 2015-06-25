@@ -53,11 +53,10 @@ Then I mounted the freshly created filesystems inside /mnt
 
 `linux ~ # mount /dev/sdb /mnt/sdb`
 
+The network interface was already up and working, so all I needed to do was doing the actual copy, using rsync from the source VM to the destination one:
 
-Now, the network was up and working, so all I needed to do was doing the actual copy, using rsync from the source VM to the destination one:
-
-`linux ~ # rsync -aHxv root@mail:/ /mnt/root --exclude=dev --exclude=proc --exclude=sys --exclude=tmp`
-`linux ~ # rsync -aHxv root@mail:/nucleus /mnt/sdb`
+`linux ~ # rsync -aHxvz root@mail:/ /mnt/root --exclude=dev --exclude=proc --exclude=sys --exclude=tmp`
+`linux ~ # rsync -aHxvz root@mail:/nucleus /mnt/sdb`
 
 
 
