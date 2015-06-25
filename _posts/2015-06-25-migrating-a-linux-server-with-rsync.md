@@ -38,8 +38,26 @@ Sector size (logical/physical): 512 bytes / 512 bytes
 I/O size (minimum/optimal): 512 bytes / 512 bytes`
 
 
-`mkfs.reiserfs /dev/sda2`
+I used yast to create the new partitions on /dev/sda and format them. sda1 is the swap partition, sda2 is the root.
+The "data" disk doesn't have any partition, it's formatted as a whole using reiserfs. I coulnd't massage yast to do that, so I used the commandline:
 
+`linux ~ # mkfs.reiserfs /dev/sdb`
+
+Then I mounted the freshly created filesystems inside /mnt
+
+`linux ~ # mkdir /mnt/root`
+
+`linux ~ # mkdir /mnt/sdb`
+
+`linux ~ # mount /dev/sda2 /mnt/root`
+
+`linux ~ # mount /dev/sdb /mnt/sdb`
+
+
+Now, the network was up and working, so all I needed to do was doing the actual copy, using rsync from the source VM to the destination one:
+
+`linux ~ # rsync -aHxv root@mail:/ /mnt/root --exclude=dev --exclude=proc --exclude=sys --exclude=tmp`
+`linux ~ # rsync -aHxv root@mail:/nucleus /mnt/sdb`
 
 
 
