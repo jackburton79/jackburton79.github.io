@@ -1,5 +1,8 @@
-Migrating a linux server using rsync
-====================================
+---
+layout: post
+title: Migrating a linux server using rsync
+---
+
 
 We are migrating from a XenServer 6.0 infrastructure to a Hyper-V 2012R2 based one. We have various VMs (Linux and Windows) which we already migrated.
 Only a few remains, but they are the ones with the biggest disks. One of those is a proxy/mail server, based on a customized Gentoo distro.
