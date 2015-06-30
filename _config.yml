@@ -1,6 +1,6 @@
 name: "Jack Burton's blog"
 description: "A place where I write about things I do at work"
-url: "localhost:4000"
+url: "http://jackburton79.github.io/"
 paginate: 10
 permalink: pretty
 pygments: true
