@@ -19,8 +19,9 @@ So I decided to try a different method, and use rsync to create a clone of the m
 I created a new VM with the Failover Cluster Manager in Hyper-V, called "Mail" with two disks with the same size of the ones in the original server.
 I then started the VM from an OpenSuSe 12.3 Rescue DVD, and opened a Terminal.
 I checked the partitions and the file systems on the old mail server, then created them on the new disks:
+
 {% highlight bash %}
-	mail ~ # fdisk -l
+mail ~ # fdisk -l
 {% endhighlight %}
 
 	Disk /dev/xvda: 16 GiB, 17179869184 bytes, 33554432 sectors
@@ -40,7 +41,6 @@ I checked the partitions and the file systems on the old mail server, then creat
 	Sector size (logical/physical): 512 bytes / 512 bytes
 	I/O size (minimum/optimal): 512 bytes / 512 bytes
   
-  
 I used yast to create the new partitions on /dev/sda and format them:
 - sda1 is the swap partition
 - sda2 is the root
@@ -48,17 +48,17 @@ I used yast to create the new partitions on /dev/sda and format them:
 The "data" disk doesn't have any partition, it's formatted as a whole using reiserfs. I couldn't massage yast to do that, so I used the commandline:
 
 {% highlight bash %}
-	linux ~ # mkfs.reiserfs /dev/sdb
+linux ~ # mkfs.reiserfs /dev/sdb
 {% endhighlight %}
 
 
 Then I mounted the freshly created filesystems inside /mnt
 
 {% highlight bash %}
-	linux ~ # mkdir /mnt/root
-	linux ~ # mkdir /mnt/sdb
-	linux ~ # mount /dev/sda2 /mnt/root
-	linux ~ # mount /dev/sdb /mnt/sdb
+linux ~ # mkdir /mnt/root
+linux ~ # mkdir /mnt/sdb
+linux ~ # mount /dev/sda2 /mnt/root
+linux ~ # mount /dev/sdb /mnt/sdb
 {% endhighlight %}
 
 
