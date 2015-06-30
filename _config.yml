@@ -1,8 +1,6 @@
-defaults:
-  -
-    scope:
-      path: "" 
-      type: "posts"
-    values:
-      layout: "default"
-      highlighter: rouge
+name: "Jack Burton's blog"
+description: "A place where I write about things I do at work"
+url: "localhost:4000"
+paginate: 10
+permalink: pretty
+pygments: true

@@ -11,9 +11,9 @@ For Linux VMs, migrating from XenServer to Hyper-V means also fixing the device 
 This is a really slow and painful process, since it involves a long downtime and a double file copy, and the NAS is not so fast (it's a entry level QNAP NAS, ArmV6 based).
 Moreover, the mail server has two disks, a 16GB and a 300GB disk, ~40% full, so it would take a very long time to export and import. Having a long downtime for the mail server isn't very nice, since incoming e-mails could be rejected.
 
-So I decided to try a different method, and using rsync to create a clone of the mail server in the Hyper-V infrastructure.
+So I decided to try a different method, and use rsync to create a clone of the mail server in the Hyper-V infrastructure.
 I created a new VM with the Failover Cluster Manager in Hyper-V, called "Mail" with two disks with the same size of the ones in the original server.
-I then started the VM with an OpenSuSe 12.3 Rescue DVD, and opened a Terminal.
+I then started the VM from an OpenSuSe 12.3 Rescue DVD, and opened a Terminal.
 I checked the partitions and the file systems on the old mail server, then created them on the new disks:
 
 {% highlight bash %}
@@ -63,14 +63,18 @@ The network interface was already up and working, so all I needed to do was doin
 {% highlight bash %}
 linux ~ # rsync -aAHxvz root@mail:/ /mnt/root --exclude=dev --exclude=proc --exclude=sys --exclude=tmp
 
-linux ~ # rsync -aAHxvz root@mail:/nucleus /mnt/sdb
+linux ~ # rsync -aAHxvz root@mail:/nucleus/ /mnt/sdb
 {% endhighlight %}
 
-After these first passes I tested the server in an isolated network. Everything worked, except Postfix, which didn't start. After I while I realized that the postfix queue folders had the wrong uids/gids.
-I should've added the "--numeric-id" option to the rsync command, since otherwise the gid and uid would've been mapped to the wrong users (the OpenSuse LiveCD uses different uids/gids than Gentoo). No problem, though. I still had to do a second rsync with services stopped, so I took that chance to fix the commands:
+After these first passes I tested the server in an isolated network. Everything seemed to work fine, except Postfix, which threw an error on start.
+After a while I realized that the postfix queue folders had the wrong permissions.
+The OpenSuse LiveCD I used to start the new VM maps users and groups to different uids/gids than the ones used in Gentoo.
+In this case I should've added the "--numeric-ids" option to the rsync command, which avoids this problem. That's not a big issue, though: I still had to do a second rsync with all the services stopped, so I took that chance to fix the uid and gids:
 
 {% highlight bash %}
 linux ~ # rsync --numeric-ids -aAHxvz root@mail:/ /mnt/root --exclude=dev --exclude=proc --exclude=sys --exclude=tmp
 
-linux ~ # rsync --numeric-ids -aAHxvz root@mail:/nucleus /mnt/sdb
+linux ~ # rsync --numeric-ids -aAHxvz root@mail:/nucleus/ /mnt/sdb
 {% endhighlight %}
+
+After that, I installed and configured Grub, and the server was ready to... serve!
