@@ -5,4 +5,5 @@ url: "http://jackburton79.github.io/"
 sidebar_image: "images/JackBurton.jpg"
 paginate: 10
 permalink: pretty
-pygments: true
+highlighter: pygments
+
