@@ -1,18 +1,52 @@
 ---
 layout: post
-title: Single Sign On with Active Directory and MediaWiki
+title: MediaWiki e Single-Sign-On in Active Directory
 ---
 
+Per vari motivi abbiamo deciso di avere un wiki interno all'azienda, dove annotare le varie procedure interne, e piu' in generale 
+da usare come strumento collaborativo.
+Dopo averne valutati alcuni, abbiamo scelto MediaWiki, e l'abbiamo quindi installato su una VM con Linux OpenSuse 13.1.
+Non descriverò qui la procedura di installazione, visto che è piuttosto semplice.
+Ciò che volevamo ottenere era un ambiente dove gli utenti potessero contribuire articoli nel modo più semplice possibile.
+Una delle cose che gli utenti trovano più fastidiose, quando devono iniziare ad utilizzare un nuovo strumento/ambiente, in base alla mia esperienza, è il
+fatto di dover ricordare/segnarsi/creare una nuova password. Per evitare questo problema, abbiamo deciso di implementare un meccanismo di Single-Sign-On,
+integrato con Active Directory, il nostro ambiente di autenticazione aziendale.
+MediaWiki ha già un'estensione che può interfacciarsi con LDAP (quindi anche Active Directory), e può quindi essere usata per raccogliere le varie
+informazioni relative all'utente loggato, però per evitare di fargli inserire la password, l'autenticazione deve avvenire via Kerberos a livello del
+web server (Apache, nel nostro caso). 
+L'implementazione di tale meccanismo richiede quindi di mettere mano sia alla configurazione di MediaWiki che di Apache.
 
-We decided to install and configure a wiki for the entire organization, where to write the various procedures.
-In the end we chose MediaWiki.
-I won't describe here the installation process, since it's quite straightforward.
-What we wanted to achieve is to have a place where any user could write down something easily, so we needed to lower the entry barrier as much as possible, but still maintain the modification history and be able to track who did a particular change.
-The biggest issue for users is the need to register to the wiki, and have to remember a new user/password combo.
-Since our infrastructure is based on Active Directory, we thought about trying to have MediaWiki use a Single-Sign-On mechanism, so it would not ask any password, and authenticate the user already logged on in Active Directory.
+Autenticazione Kerberos in Apache
 
-MediaWiki already have a "LDAP" authentication plugin: it can bind to Active Directory and authenticate the user using its AD credentials. Nice! But the user still needs to re-enter the credentials he already typed on login.
-Luckily, there is a solution: MediaWiki can use the user passed by the WebServer (Apache, in this case), using the "Auth remoteuser extension" https://www.mediawiki.org/wiki/Extension:Auth_remoteuser , so... let me introduce you to Apache Kerberos Authentication.
+Per poter funzionare, si deve creare un SPN (Service Principal Name) per il servizio HTTP sull'host, e aggiungere la keytab relativa.
+Per farlo ci sono vari modi. A mio parere il piu' semplice, se il server è già in dominio, è il seguente:
+
+Da shell:
+{{{
+group:> net ads keytab add HTTP -U <admin>
+}}}
+
+dove <admin> è un utente con diritti di Domain Admin in Active Directory.
+Questo comando crea sia il SPN in AD, sia aggiunge la keytab al sistema.
+
+Aggiungere le righe seguenti alla configurazione della directory MediaWiki in Apache:
+
+{{{
+    AuthType Kerberos
+    AuthName "MediaWiki Authentication"
+    KrbMethodNegotiate On
+    KrbMethodK5Passwd On
+    KrbVerifyKDC on
+    KrbAuthRealm NomeDominio
+    Krb5Keytab /etc/apache2/httpd.keytab
+    KrbLocalUserMapping On
+    require valid-user
+
+}}}
+
+
+
+
 
 
 
